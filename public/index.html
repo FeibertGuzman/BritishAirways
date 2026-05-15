@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>British Airways | Lounge Eligibility Analytics</title>
+    <meta name="description" content="Dashboard predictivo de elegibilidad para salas VIP - Heathrow Terminal 3">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores Corporativos BA / Premium */
+            --ba-navy: #011E41;
+            --ba-blue: #075AAA;
+            --ba-red: #E31837;
+            --ba-light: #F7F9FC;
+            --text-dark: #1A1A1A;
+            --text-light: #FFFFFF;
+            --glass-bg: rgba(1, 30, 65, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--ba-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            border-bottom: 2px solid var(--ba-red);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ba-navy);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--ba-navy);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--ba-blue);
+        }
+
+        .btn-primary {
+            background-color: var(--ba-red);
+            color: var(--text-light) !important;
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: #b8122a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(227, 24, 55, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('assets/hero_bg.png') center/cover no-repeat;
+            color: var(--text-light);
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(1, 30, 65, 0.6), rgba(1, 30, 65, 0.9));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            animation: slideUp 1s ease-out;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-content h1 span {
+            color: var(--ba-red);
+        }
+
+        .hero-content p {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #d1d5db;
+        }
+
+        /* Seccion Logros */
+        .achievements {
+            padding: 100px 50px;
+            background-color: var(--ba-light);
+            text-align: center;
+        }
+
+        .achievements h2 {
+            font-size: 2.5rem;
+            color: var(--ba-navy);
+            margin-bottom: 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+            border-top: 4px solid var(--ba-blue);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: var(--ba-navy);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #666;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--ba-navy);
+            color: var(--text-light);
+            text-align: center;
+            padding: 30px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Animaciones */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            nav { padding: 15px 20px; }
+            .achievements { padding: 60px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">✈️ British Airways</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Inicio</a></li>
+            <li><a href="#logros">Resultados</a></li>
+            <li><a href="https://github.com/FeibertGuzman" target="_blank" class="btn-primary">Ver Código</a></li>
+        </ul>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1>Anticipando el Futuro de las <span>Salas VIP</span></h1>
+            <p>Implementación de un modelo escalable de agrupamiento para proyectar la demanda de pasajeros en los Lounges de la Terminal 3 de Heathrow (Nivel 1 Concorde, Nivel 2 First, Nivel 3 Club).</p>
+            <a href="#logros" class="btn-primary">Descubre cómo lo logramos</a>
+        </div>
+    </section>
+
+    <section id="logros" class="achievements">
+        <h2>Metas Alcanzadas del Proyecto</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Modelo Predictivo Escalable</h3>
+                <p>En lugar de estimar vuelo por vuelo, diseñamos una matriz de agrupamiento inteligente basada en el <strong>Alcance de la Ruta (HAUL)</strong> y el <strong>Momento del Día</strong>, permitiendo adaptar los pronósticos a calendarios dinámicos.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>Automatización Total</h3>
+                <p>Desarrollamos pipelines en Python (Pandas/Openpyxl) que procesan bases de datos con miles de vuelos y diligencian de forma autónoma las plantillas de entrega para el departamento de planificación aeroportuaria.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💻</div>
+                <h3>Dashboard en Streamlit</h3>
+                <p>Construimos una aplicación interactiva que permite a los directivos visualizar inmediatamente las proyecciones y distribuciones a través de gráficos corporativos precisos y fáciles de entender.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; Desarrollado para la Simulación de Data Science de British Airways (Forage).</p>
+    </footer>
+
+</body>
+</html>
